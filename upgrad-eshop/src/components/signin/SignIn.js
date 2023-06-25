@@ -35,7 +35,7 @@ function SignIn() {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await authService(username, password);
+                const response = await authService.loginService(username, password);
                 console.log('Login successful:', response);
                 // Reset the form
                 initialState();

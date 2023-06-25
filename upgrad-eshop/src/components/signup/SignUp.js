@@ -80,7 +80,7 @@ function SignUp() {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await authService(email, password, firstName, lastName, contactNumber);
+                const response = await authService.signUpService(email, password, firstName, lastName, contactNumber);
                 console.log('Sign Up successful:', response);
                 // Reset the form
                 initialState();
