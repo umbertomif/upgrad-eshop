@@ -1,9 +1,12 @@
+const url = 'http://localhost:8080/api/products/';
+
 const productService = {
 
+
     getCategories: async () => {
-        const url = 'http://localhost:8080/api/products/categories';
+        const getCategoriesUrl = url + 'categories';
         try {
-            const response = await fetch(url, {
+            const response = await fetch(getCategoriesUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -20,7 +23,6 @@ const productService = {
     },
 
     getProducts: async () => {
-        const url = 'http://localhost:8080/api/products';
         try {
             const response = await fetch(url, {
                 method: 'GET',
@@ -39,9 +41,9 @@ const productService = {
     },
 
     getProduct: async (id) => {
-        const url = 'http://localhost:8080/api/products/' + id;
+        const getProductUrl =  url + id;
         try {
-            const response = await fetch(url, {
+            const response = await fetch(getProductUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,7 +60,6 @@ const productService = {
     },
 
     addProduct: async (data) => {
-        const url = 'http://localhost:8080/api/products';
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -77,9 +78,9 @@ const productService = {
     },
 
     updateProduct: async (id, data) => {
-        const url = 'http://localhost:8080/api/product/' + id;
+        const updateProductUrl = url + id;
         try {
-            const response = await fetch(url, {
+            const response = await fetch(updateProductUrl, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,9 +97,9 @@ const productService = {
     },
 
     deleteProduct: async (id) => {
-        const url = 'http://localhost:8080/api/product/' + id;
+        const deleteProductUrl = url + id;
         try {
-            const response = await fetch(url, {
+            const response = await fetch(deleteProductUrl, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
