@@ -5,7 +5,7 @@ import { Container, Stack, Typography, TextField, Button, Alert, AlertTitle } fr
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import authService from '../../services/authService';
 
-function SignUp() {
+const SignUp = () => {
     const [firstName, setFirstName] = useState('');
     const [firstNameError, setFirstNameError] = useState(null);
 

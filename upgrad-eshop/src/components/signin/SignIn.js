@@ -5,7 +5,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './SignIn.css';
 import authService from '../../services/authService';
 
-function SignIn() {
+const SignIn = () => {
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState(null);
     const [password, setPassword] = useState('');
