@@ -1,11 +1,11 @@
-import './Products.css';
+import './Home.css';
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Stack, Typography, ToggleButton, ToggleButtonGroup, Select, MenuItem, Card, CardContent, Grid, Button, IconButton, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import productService from '../../services/productService';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const Products = () => {
+const Home = () => {
     const [user, setUser] = useState(null);
     const prevUser = useRef(null);
     const [categories, setCategories] = useState([]);
@@ -119,14 +119,13 @@ const Products = () => {
         setFilteredProducts(sortedProducts);
     };
 
-    const handleBuyClick = () => {
-        console.log('Buy clicked');
+    const handleBuyClick = (productId) => {
+        window.location.href = `/product-detail/${productId}`;
         // Call your desired function here for the button
     };
 
     const handleEditClick = (productId) => {
-        console.log('Edit clicked');
-        window.location = `/product/${productId}`;
+        window.location.href = `/product/${productId}`;
     };
 
     const handleDeleteClick = (productId) => {
@@ -185,7 +184,7 @@ const Products = () => {
                                     {product.description}
                                 </Typography>
                                 <Box display="flex" alignItems="center" marginTop={2}>
-                                    <Button variant="contained" onClick={handleBuyClick}>
+                                    <Button variant="contained" onClick={() => handleBuyClick(product.id)}>
                                         BUY
                                     </Button>
                                     {isAdmin() && user !== null ? (
@@ -218,4 +217,4 @@ const Products = () => {
     );
 };
 
-export default Products;
+export default Home;

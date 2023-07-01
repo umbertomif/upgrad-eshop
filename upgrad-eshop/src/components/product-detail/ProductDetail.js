@@ -1,6 +1,6 @@
 import './ProductDetail.css';
 
-function ProductDetail() {
+const ProductDetail = () => {
   return (
     <div>Product Detail page</div>
   );
