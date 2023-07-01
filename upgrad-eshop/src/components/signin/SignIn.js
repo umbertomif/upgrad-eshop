@@ -42,7 +42,7 @@ const SignIn = () => {
                 // save on session
                 sessionStorage.setItem('user', JSON.stringify(response));
                 // Redirect to home screen using useNavigate
-                window.location.href = '/products';
+                window.location.href = '/';
             } catch (error) {
                 console.error('Login error:', error);
                 setError(error.message);
