@@ -1,3 +1,4 @@
+import './Product.css';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import CreatableSelect from 'react-select/creatable';
@@ -42,7 +43,7 @@ const Product = () => {
             const product = await productService.getProduct(id);
             console.log(product);
             setName(product.name);
-            setCategory(product.category);
+            setCategory({ value: product.category, label: product.category });
             setManufacturer(product.manufacturer);
             setAvailableItems(product.availableItems);
             setPrice(product.price);
