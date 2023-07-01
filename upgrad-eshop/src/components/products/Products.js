@@ -1,46 +1,147 @@
 import './Products.css';
-import React, { useState, useEffect } from 'react';
-import { Container, Stack, Typography, ToggleButton, ToggleButtonGroup, Select, MenuItem, Card, CardContent, Grid } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Container, Stack, Typography, ToggleButton, ToggleButtonGroup, Select, MenuItem, Card, CardContent, Grid, Button, IconButton, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import productService from '../../services/productService';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Products = () => {
+    const [user, setUser] = useState(null);
+    const prevUser = useRef(null);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedSortOption, setSelectedSortOption] = useState('default');
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedProductId, setSelectedProductId] = useState(null);
+
+    const getUser = () => {
+        // Retrieve user data from session storage
+        const storedUser = sessionStorage.getItem('user');
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+        }
+    };
 
     const fetchCategories = async () => {
         try {
             const items = await productService.getCategories();
             const options = items.map((item) => ({ value: item, label: item }));
+            options.unshift({ value: '', label: 'ALL' });
             setCategories(options);
         } catch (error) {
             console.error('Get Categories error:', error);
         }
     };
 
-    const fetchProducts = async (sortOption) => {
+    const fetchProducts = async () => {
         try {
-            const items = await productService.getProducts(sortOption);
+            const items = await productService.getProducts();
             setProducts(items);
+            setFilteredProducts(items);
         } catch (error) {
             console.error('Get Products error:', error);
         }
     };
 
+    const deleteProduct = async (id) => {
+        try {
+            const isDeleted = await productService.deleteProduct(id);
+            if (isDeleted) {
+                setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+            }
+        } catch (error) {
+            console.error('Delete Product error:', error);
+        }
+    };
+
     useEffect(() => {
+        getUser();
         fetchCategories();
-        fetchProducts(selectedSortOption);
+        fetchProducts();
     }, []);
 
-    const handleCategoryChange = (event, newCategory) => {
-        setSelectedCategory(newCategory);
+    useEffect(() => {
+        // Check if user role has changed
+        if (prevUser.current && prevUser.current.roles !== user?.roles) {
+            getUser();
+        }
+        prevUser.current = user;
+    }, [user]);
+
+    const isAdmin = () => {
+        if (user) {
+            return user.roles.includes('ADMIN');
+        }
+        return false;
+    };
+
+    useEffect(() => {
+        if (selectedCategory) {
+            const filteredProducts = products.filter(x => x.category === selectedCategory);
+            setFilteredProducts(filteredProducts);
+        } else {
+            setFilteredProducts(products);
+        }
+    }, [selectedCategory, products]);
+
+    useEffect(() => {
+        sortProducts(selectedSortOption);
+    }, [selectedSortOption]);
+
+    const handleCategoryChange = (event) => {
+        const category = event.target.value;
+        setSelectedCategory(category);
     };
 
     const handleSortOptionChange = (event) => {
         const sortOption = event.target.value;
         setSelectedSortOption(sortOption);
-        fetchProducts(sortOption);
+    };
+
+    const sortProducts = (sortOption) => {
+        let sortedProducts = [...filteredProducts];
+        switch (sortOption) {
+            case 'priceHighToLow':
+                sortedProducts.sort((product1, product2) => product2.price - product1.price);
+                break;
+            case 'priceLowToHigh':
+                sortedProducts.sort((product1, product2) => product1.price - product2.price);
+                break;
+            case 'newest':
+                sortedProducts.sort((product1, product2) => new Date(product2.createdAt) - new Date(product1.createdAt));
+                break;
+            default:
+                break;
+        }
+        setFilteredProducts(sortedProducts);
+    };
+
+    const handleBuyClick = () => {
+        console.log('Buy clicked');
+        // Call your desired function here for the button
+    };
+
+    const handleEditClick = (productId) => {
+        console.log('Edit clicked');
+        window.location = `/product/${productId}`;
+    };
+
+    const handleDeleteClick = (productId) => {
+        setSelectedProductId(productId);
+        setOpenDialog(true);
+    };
+
+    const handleDialogClose = () => {
+        setOpenDialog(false);
+    };
+
+    const handleDialogConfirm = () => {
+        console.log('Delete confirmed');
+        deleteProduct(selectedProductId);
+        setOpenDialog(false);
     };
 
     return (
@@ -67,27 +168,52 @@ const Products = () => {
                 </Select>
             </Stack>
             <Grid container spacing={2} mt={2}>
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                     <Grid key={product.id} item xs={12} sm={6} md={4}>
                         <Card>
                             <CardContent>
                                 <img src={product.imageUrl} alt={product.name} style={{ width: '100%', marginTop: '10px' }} />
                                 <Stack direction="row" justifyContent="space-between" alignItems="baseline">
-                                    <Typography variant="h5" component="div">
+                                    <Typography variant="h6" component="div">
                                         {product.name}
                                     </Typography>
-                                    <Typography variant="body1">
+                                    <Typography variant="h6">
                                         {product.price}
                                     </Typography>
                                 </Stack>
                                 <Typography variant="body2">
                                     {product.description}
                                 </Typography>
+                                <Box display="flex" alignItems="center" marginTop={2}>
+                                    <Button variant="contained" onClick={handleBuyClick}>
+                                        BUY
+                                    </Button>
+                                    {isAdmin() && user !== null ? (
+                                        <Box marginLeft="auto">
+                                            <IconButton onClick={() => handleEditClick(product.id)}>
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton onClick={() => handleDeleteClick(product.id)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Box>
+                                    ) : null}
+                                </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
+            <Dialog open={openDialog} onClose={handleDialogClose}>
+                <DialogTitle>Confirm deletion of product?</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2">Are you sure you want to delete this product?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogConfirm} variant="contained"  color="primary">OK</Button>
+                    <Button onClick={handleDialogClose} variant="outlined" >CANCEL</Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };
