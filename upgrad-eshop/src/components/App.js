@@ -6,6 +6,7 @@ import Home from './home/Home';
 import Product from './product/Product';
 import ProductDetail from './product-detail/ProductDetail';
 import NoMatch from './no-match/NoMatch';
+import Order from './order/Order';
 
 const App = () => {
     return (
@@ -18,6 +19,7 @@ const App = () => {
                 <Route path="/product" element={<Product />} />
                 <Route path="/product/:id" element={<Product />} />
                 <Route path="/product-detail/:id" element={<ProductDetail />} />
+                <Route path="/order/:id/:quantity" element={<Order />} />
                 <Route path="*" element={<NoMatch />} />
             </Routes>
         </Router>
