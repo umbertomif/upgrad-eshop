@@ -1,0 +1,42 @@
+.container, .stack, .step {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 50px;
+}
+
+.select {
+    width: 90%;
+    max-width: 600px;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.fields {
+    width: 90%;
+    max-width: 400px;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.line {
+    display: flex;
+    border-left: 1px solid gray;
+    padding-left: 20px; /* Adjust the padding as per your preference */
+}
+  
+@media (min-width: 768px) {
+    .container, .stack, .step {
+        max-width: 800px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container, .stack, .step {
+        max-width: 1000px;
+    }
+}
