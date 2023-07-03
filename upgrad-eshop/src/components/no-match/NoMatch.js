@@ -1,6 +1,6 @@
 import './NoMatch.css';
 
-function NoMatch() {
+const NoMatch = () => {
   return (
     <div>No Match page</div>
   );
