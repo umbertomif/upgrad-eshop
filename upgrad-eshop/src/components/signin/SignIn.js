@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Stack, Typography, TextField, Button } from '@mui/material'
+import { Container, Stack, Typography, TextField, Button } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './SignIn.css';
 import authService from '../../services/authService';
@@ -18,7 +18,8 @@ const SignIn = () => {
         setError(null);
         setUsername('');
         setPassword('');
-    }
+    };
+
     const validateForm = () => {
         if (username.trim() === '') {
             setUsernameError(true);
@@ -28,7 +29,7 @@ const SignIn = () => {
             setPasswordError(true);
             return false;
         }
-        return true
+        return true;
     };
 
     const handleSubmit = async (e) => {
@@ -39,9 +40,9 @@ const SignIn = () => {
                 console.log('Login successful:', response);
                 // Reset the form
                 initialState();
-                // save on session
+                // Save user object to sessionStorage
                 sessionStorage.setItem('user', JSON.stringify(response));
-                // Redirect to home screen using useNavigate
+                // Redirect to home screen using window.location
                 window.location.href = '/';
             } catch (error) {
                 console.error('Login error:', error);
@@ -53,21 +54,19 @@ const SignIn = () => {
     return (
         <Container className="container">
             <form onSubmit={handleSubmit}>
-                <Stack sx={{ alignItems: "center" }} spacing={2}>
+                <Stack sx={{ alignItems: 'center' }} spacing={2}>
                     <LockOutlinedIcon
                         sx={{
-                            backgroundColor: "red",
-                            color: "white",
-                            borderRadius: "50%",
-                            padding: "10px",
-                            fontSize: "32px",
+                            backgroundColor: 'red',
+                            color: 'white',
+                            borderRadius: '50%',
+                            padding: '10px',
+                            fontSize: '32px',
                         }}
                     />
-                    <Typography variant='h5'>
-                        Sign In
-                    </Typography>
+                    <Typography variant="h5">Sign In</Typography>
                 </Stack>
-                <Stack className='stack' spacing={2} >
+                <Stack className="stack" spacing={2}>
                     <TextField
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -87,21 +86,23 @@ const SignIn = () => {
                         fullWidth
                         id="password"
                         label="Password"
-                        type='password'
+                        type="password"
                     />
-                    {error && <Typography sx={{ color: 'red' }} variant='body2'>Error: {error}</Typography>}
+                    {error && (
+                        <Typography sx={{ color: 'red' }} variant="body2">
+                            Error: {error}
+                        </Typography>
+                    )}
                     <Button variant="contained" type="submit">
                         Sign In
                     </Button>
                     <Link to="/signup">
-                        <Typography variant='body2'>
-                            Don't have an account? Sign Up
-                        </Typography>
+                        <Typography variant="body2">Don't have an account? Sign Up</Typography>
                     </Link>
                 </Stack>
             </form>
         </Container>
     );
-}
+};
 
 export default SignIn;
