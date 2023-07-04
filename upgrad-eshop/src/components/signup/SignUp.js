@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './SignUp.css';
 import { Link } from 'react-router-dom';
-import { Container, Stack, Typography, TextField, Button, Alert, AlertTitle } from '@mui/material'
+import { Container, Stack, Typography, TextField, Button, Alert, Snackbar } from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import authService from '../../services/authService';
 
@@ -80,7 +80,7 @@ const SignUp = () => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await authService.signUpService(email, password, firstName, lastName, contactNumber);
+                const response = await authService.signUpService(password, firstName, lastName, contactNumber);
                 console.log('Sign Up successful:', response);
                 // Reset the form
                 initialState();
@@ -91,6 +91,11 @@ const SignUp = () => {
                 setError(error.message);
             }
         }
+    };
+
+    const handleCloseSnackbar = () => {
+        setError(null);
+        setSuccess(null);
     };
 
     return (
@@ -180,16 +185,28 @@ const SignUp = () => {
                         helperText={contactNumberError ? 'Contact Number is required' : ''}
                     />
                     {error &&
-                        <Alert variant="filled" severity="error">
-                            <AlertTitle>Error</AlertTitle>
-                            {error}
-                        </Alert>
+                        <Snackbar
+                            open={!!error || !!success}
+                            autoHideDuration={6000}
+                            onClose={handleCloseSnackbar}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <Alert variant="filled" severity="error">
+                                {error}
+                            </Alert>
+                        </Snackbar>
                     }
                     {success &&
-                        <Alert variant="filled" severity="success">
-                            <AlertTitle>Success</AlertTitle>
-                            User registered successfully!
-                        </Alert>
+                        <Snackbar
+                            open={!!error || !!success}
+                            autoHideDuration={6000}
+                            onClose={handleCloseSnackbar}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <Alert variant="filled" severity="success">
+                                User registered successfully!
+                            </Alert>
+                        </Snackbar>
                     }
                     <Button variant="contained" type="submit">
                         Sign Up

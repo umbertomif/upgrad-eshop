@@ -1,7 +1,7 @@
 import './Order.css';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, TextField, Typography, Button, Box, Card, CardMedia, Stack, Grid, Stepper, Step, StepLabel, Alert, AlertTitle, Select, MenuItem } from '@mui/material';
+import { Container, TextField, Typography, Button, Box, Card, CardMedia, Stack, Grid, Stepper, Step, StepLabel, Alert, AlertTitle, Select, MenuItem, Snackbar } from '@mui/material';
 import productService from '../../services/productService';
 import addressService from '../../services/addressService';
 import orderService from '../../services/orderService';
@@ -66,18 +66,6 @@ const Order = () => {
         setState('');
         setLandmark('');
         setZipcode('');
-        removeError();
-    }
-
-    const removeError = () => {
-        setError(null);
-        setSuccess(null);
-        setNameError(null);
-        setContactNumberError(null);
-        setStreetError(null);
-        setCityError(null);
-        setStateError(null);
-        setZipcode(null);
     }
 
     const validateForm = () => {
@@ -145,7 +133,8 @@ const Order = () => {
                 // Reset the form
                 initialState();
                 // Set Success
-                setSuccess(true);
+                setSuccess('Address registered successfully!');
+                fetchAddresses();
             } catch (error) {
                 console.error('Sign Up error:', error);
                 setError(error.message);
@@ -168,14 +157,19 @@ const Order = () => {
             // Reset the form
             initialState();
             // Set Success
-            setSuccess(true);
+            setSuccess('Order placed successfully!');
             // redirect to home
             window.location.href = '/';
         } catch (error) {
             console.error('Sign Up error:', error);
             setError(error.message);
         }
-};
+    };
+
+    const handleCloseSnackbar = () => {
+        setError(null);
+        setSuccess(null);
+    };
 
     if (!product) {
         return <div>Loading...</div>;
@@ -317,18 +311,6 @@ const Order = () => {
                                 error={zipcodeError}
                                 helperText={zipcodeError ? 'Zip Code is required' : ''}
                             />
-                            {error &&
-                                <Alert variant="filled" severity="error">
-                                    <AlertTitle>Error</AlertTitle>
-                                    {error}
-                                </Alert>
-                            }
-                            {success &&
-                                <Alert variant="filled" severity="success">
-                                    <AlertTitle>Success</AlertTitle>
-                                    Address registered successfully!
-                                </Alert>
-                            }
                             <Button variant="contained" type="submit">
                                 SAVE ADDRESS
                             </Button>
@@ -388,6 +370,30 @@ const Order = () => {
                     </Box>
                 </Container>
             ) : (<div></div>)}
+            {error &&
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                    <Alert variant="filled" severity="error">
+                        {error}
+                    </Alert>
+                </Snackbar>
+            }
+            {success &&
+                <Snackbar
+                    open={!!success}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                    <Alert variant="filled" severity="success">
+                        {success}
+                    </Alert>
+                </Snackbar>
+            }
             <Grid container alignItems="center" justifyContent="center" direction="row" columnSpacing={1} mt={4}>
                 <Grid item>
                     <Button variant="text" sx={{ color: "gray" }} onClick={handleBackButtonClick}>

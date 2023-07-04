@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Stack, Typography, TextField, Button } from '@mui/material';
+import { Container, Stack, Typography, TextField, Button, Alert, Snackbar } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './SignIn.css';
 import authService from '../../services/authService';
@@ -51,6 +51,10 @@ const SignIn = () => {
         }
     };
 
+    const handleCloseSnackbar = () => {
+        setError(null);
+    };
+
     return (
         <Container className="container">
             <form onSubmit={handleSubmit}>
@@ -68,31 +72,38 @@ const SignIn = () => {
                 </Stack>
                 <Stack className="stack" spacing={2}>
                     <TextField
+                        required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         error={usernameError}
                         helperText={usernameError ? 'Username is required' : ''}
-                        required
                         fullWidth
                         id="email"
                         label="Email Address"
                     />
                     <TextField
+                        required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         error={passwordError}
                         helperText={passwordError ? 'Password is required' : ''}
-                        required
                         fullWidth
                         id="password"
                         label="Password"
                         type="password"
                     />
-                    {error && (
-                        <Typography sx={{ color: 'red' }} variant="body2">
-                            Error: {error}
-                        </Typography>
-                    )}
+                    {error &&
+                        <Snackbar
+                            open={!!error}
+                            autoHideDuration={6000}
+                            onClose={handleCloseSnackbar}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <Alert variant="filled" severity="error">
+                                {error}
+                            </Alert>
+                        </Snackbar>
+                    }
                     <Button variant="contained" type="submit">
                         Sign In
                     </Button>
