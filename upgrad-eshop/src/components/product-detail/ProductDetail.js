@@ -1,5 +1,5 @@
 import './ProductDetail.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Typography, TextField, Button, Card, CardMedia, Stack, ToggleButton, ToggleButtonGroup, Grid } from '@mui/material';
 import productService from '../../services/productService';
@@ -10,11 +10,31 @@ const ProductDetail = () => {
     const [quantity, setQuantity] = useState(1);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const prevCategories = useRef(null);
 
     useEffect(() => {
         fetchCategories();
-        fetchProductDetails();
     }, []);
+
+    useEffect(() => {
+        if (prevCategories.current && JSON.stringify(prevCategories.current) !== JSON.stringify(categories)) {
+            fetchCategories();
+        }
+        prevCategories.current = categories
+    }, [categories]);
+
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
+                const product = await productService.getProduct(id);
+                setProduct(product);
+            } catch (error) {
+                console.error('Fetch Product Details Error:', error);
+            }
+        };
+
+        fetchProductDetails();
+    }, [id]);
 
     const fetchCategories = async () => {
         try {
@@ -24,15 +44,6 @@ const ProductDetail = () => {
             setCategories(options);
         } catch (error) {
             console.error('Get Categories error:', error);
-        }
-    };
-
-    const fetchProductDetails = async () => {
-        try {
-            const product = await productService.getProduct(id);
-            setProduct(product);
-        } catch (error) {
-            console.error('Fetch Product Details Error:', error);
         }
     };
 

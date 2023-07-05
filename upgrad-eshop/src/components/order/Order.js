@@ -8,8 +8,7 @@ import orderService from '../../services/orderService';
 
 const Order = () => {
     // params
-    const { id } = useParams();
-    const { quantity } = useParams();
+    const { id, quantity } = useParams();
     // product
     const [product, setProduct] = useState(null);
     // Select Address
@@ -37,7 +36,6 @@ const Order = () => {
     const [success, setSuccess] = useState(null);
 
     useEffect(() => {
-        fetchProductDetails();
         fetchAddresses();
     }, []);
 
@@ -48,23 +46,17 @@ const Order = () => {
         prevAddresses.current = addresses;
     }, [addresses]);
 
-    const fetchProductDetails = async () => {
-        try {
-            const product = await productService.getProduct(id);
-            setProduct(product);
-        } catch (error) {
-            console.error('Fetch Product Details Error:', error);
-        }
-    };
-
-    const fetchAddresses = async () => {
-        try {
-            const addresses = await addressService.getAddresses();
-            setAddresses(addresses);
-        } catch (error) {
-            console.error('Fetch Addresses Error:', error);
-        }
-    };
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
+                const product = await productService.getProduct(id);
+                setProduct(product);
+            } catch (error) {
+                console.error('Fetch Product Details Error:', error);
+            }
+        };
+        fetchProductDetails();
+    }, [id]);
 
     const initialState = () => {
         setName('');
@@ -75,6 +67,15 @@ const Order = () => {
         setLandmark('');
         setZipcode('');
     }
+
+    const fetchAddresses = async () => {
+        try {
+            const addresses = await addressService.getAddresses();
+            setAddresses(addresses);
+        } catch (error) {
+            console.error('Fetch Addresses Error:', error);
+        }
+    };
 
     const validateForm = () => {
         if (name.trim() === '') {
