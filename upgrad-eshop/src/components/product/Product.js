@@ -2,7 +2,7 @@ import './Product.css';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import CreatableSelect from 'react-select/creatable';
-import { Container, Stack, Typography, TextField, Button, Alert, AlertTitle } from '@mui/material';
+import { Container, Stack, Typography, TextField, Button, Alert, Snackbar } from '@mui/material';
 import productService from '../../services/productService';
 
 const Product = () => {
@@ -61,7 +61,7 @@ const Product = () => {
             // Reset the form
             initialState();
             // Set Success
-            setSuccess(true);
+            setSuccess(`Product ${data.name} added successfully`);
         } catch (error) {
             console.error('Added Product error:', error);
             setError(error.message);
@@ -73,8 +73,7 @@ const Product = () => {
             const response = await productService.updateProduct(id, data);
             console.log('Updated Product successfully:', response);
             // Set Success
-            setSuccess(true);
-
+            setSuccess(`Product ${data.name} modify successfully`);
         } catch (error) {
             console.error('Updated Product error:', error);
             setError(error.message);
@@ -167,6 +166,11 @@ const Product = () => {
         }
     };
 
+    const handleCloseSnackbar = () => {
+        setError(null);
+        setSuccess(null);
+    };
+
     return (
         <Container className="container">
             <Stack sx={{ alignItems: "center" }} spacing={2}>
@@ -243,16 +247,28 @@ const Product = () => {
                         helperText={descriptionError ? 'Product Description is required' : ''}
                     />
                     {error &&
-                        <Alert variant="filled" severity="error">
-                            <AlertTitle>Error</AlertTitle>
-                            {error}
-                        </Alert>
+                        <Snackbar
+                            open={!!error}
+                            autoHideDuration={6000}
+                            onClose={handleCloseSnackbar}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <Alert variant="filled" severity="error">
+                                {error}
+                            </Alert>
+                        </Snackbar>
                     }
                     {success &&
-                        <Alert variant="filled" severity="success">
-                            <AlertTitle>Success</AlertTitle>
-                            User registered successfully!
-                        </Alert>
+                        <Snackbar
+                            open={!!success}
+                            autoHideDuration={6000}
+                            onClose={handleCloseSnackbar}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <Alert variant="filled" severity="success">
+                                {success}
+                            </Alert>
+                        </Snackbar>
                     }
                     <Button variant="contained" type="submit">
                         SAVE PRODUCT
