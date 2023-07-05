@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './NavBar.css';
 import { Link } from 'react-router-dom';
-import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, Toolbar, Typography, InputBase } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SearchIcon from '@mui/icons-material/Search';
 
 const NavBar = () => {
     const [user, setUser] = useState(null);
     const prevUser = useRef(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         // Retrieve user data from session storage
@@ -45,6 +47,14 @@ const NavBar = () => {
         return false;
     };
 
+    const handleSearchQueryChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ color: '#3f51b5' }}>
@@ -54,6 +64,22 @@ const NavBar = () => {
                         upGrad E-Shop
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
+                    {user !== null ? (
+                        <>
+                            <form onSubmit={handleSearchSubmit}>
+                                <Box sx={{ width: 400, display: 'flex', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.15)', borderRadius: 1, pl: 2, pr: 2 }}>
+                                    <SearchIcon sx={{ mr: 1, color: 'white' }} />
+                                    <InputBase
+                                        sx={{ width: 400, color: 'white' }}
+                                        placeholder="Search..."
+                                        value={searchQuery}
+                                        onChange={handleSearchQueryChange}
+                                    />
+                                </Box>
+                            </form>
+                            <Box sx={{ flexGrow: 1 }} />
+                        </>
+                    ) : null}
                     {user === null ? (
                         <>
                             <Link to="/login" className="linkMenu">
@@ -103,4 +129,4 @@ const NavBar = () => {
     );
 }
 
-export default  NavBar
+export default NavBar
