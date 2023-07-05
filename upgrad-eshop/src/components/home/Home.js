@@ -18,6 +18,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Alert, 
+    Snackbar
 } from '@mui/material';
 import productService from '../../services/productService';
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,7 +34,9 @@ const Home = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedSortOption, setSelectedSortOption] = useState('default');
     const [openDialog, setOpenDialog] = useState(false);
-    const [selectedProductId, setSelectedProductId] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
 
     const getUser = () => {
         // Retrieve user data from session storage
@@ -70,13 +74,14 @@ const Home = () => {
         }
     };
 
-    const deleteProduct = async (id) => {
+    const deleteProduct = async (product) => {
         try {
-            const isDeleted = await productService.deleteProduct(id);
+            const isDeleted = await productService.deleteProduct(product.id);
             if (isDeleted) {
                 setProducts((prevProducts) =>
-                    prevProducts.filter((product) => product.id !== id)
+                    prevProducts.filter((item) => item.id !== product.id)
                 );
+                setSuccess(`Product ${product.name} deleted successfully`);
             }
         } catch (error) {
             console.error('Delete Product error:', error);
@@ -154,8 +159,8 @@ const Home = () => {
         window.location.href = `/product/${productId}`;
     };
 
-    const handleDeleteClick = (productId) => {
-        setSelectedProductId(productId);
+    const handleDeleteClick = (product) => {
+        setSelectedProduct(product);
         setOpenDialog(true);
     };
 
@@ -165,8 +170,13 @@ const Home = () => {
 
     const handleDialogConfirm = () => {
         console.log('Delete confirmed');
-        deleteProduct(selectedProductId);
+        deleteProduct(selectedProduct);
         setOpenDialog(false);
+    };
+
+    const handleCloseSnackbar = () => {
+        setError(null);
+        setSuccess(null);
     };
 
     return (
@@ -218,7 +228,7 @@ const Home = () => {
                                             <IconButton onClick={() => handleEditClick(product.id)}>
                                                 <EditIcon />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDeleteClick(product.id)}>
+                                            <IconButton onClick={() => handleDeleteClick(product)}>
                                                 <DeleteIcon />
                                             </IconButton>
                                         </Box>
@@ -229,6 +239,30 @@ const Home = () => {
                     </Grid>
                 ))}
             </Grid>
+            {error &&
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                    <Alert variant="filled" severity="error">
+                        {error}
+                    </Alert>
+                </Snackbar>
+            }
+            {success &&
+                <Snackbar
+                    open={!!success}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                    <Alert variant="filled" severity="success">
+                        {success}
+                    </Alert>
+                </Snackbar>
+            }
             <Dialog open={openDialog} onClose={handleDialogClose}>
                 <DialogTitle>Confirm deletion of product?</DialogTitle>
                 <DialogContent>
