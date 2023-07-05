@@ -1,6 +1,24 @@
 import './Home.css';
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Stack, Typography, ToggleButton, ToggleButtonGroup, Select, MenuItem, Card, CardContent, Grid, Button, IconButton, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+    Container,
+    Stack,
+    Typography,
+    ToggleButton,
+    ToggleButtonGroup,
+    Select,
+    MenuItem,
+    Card,
+    CardContent,
+    Grid,
+    Button,
+    IconButton,
+    Box,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+} from '@mui/material';
 import productService from '../../services/productService';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,6 +43,13 @@ const Home = () => {
         }
     };
 
+    const isAdmin = () => {
+        if (user) {
+            return user.roles.includes('ADMIN');
+        }
+        return false;
+    };
+
     const fetchCategories = async () => {
         try {
             const items = await productService.getCategories();
@@ -40,7 +65,6 @@ const Home = () => {
         try {
             const items = await productService.getProducts();
             setProducts(items);
-            setFilteredProducts(items);
         } catch (error) {
             console.error('Get Products error:', error);
         }
@@ -50,7 +74,9 @@ const Home = () => {
         try {
             const isDeleted = await productService.deleteProduct(id);
             if (isDeleted) {
-                setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+                setProducts((prevProducts) =>
+                    prevProducts.filter((product) => product.id !== id)
+                );
             }
         } catch (error) {
             console.error('Delete Product error:', error);
@@ -71,16 +97,11 @@ const Home = () => {
         prevUser.current = user;
     }, [user]);
 
-    const isAdmin = () => {
-        if (user) {
-            return user.roles.includes('ADMIN');
-        }
-        return false;
-    };
-
     useEffect(() => {
         if (selectedCategory) {
-            const filteredProducts = products.filter(x => x.category === selectedCategory);
+            const filteredProducts = products.filter(
+                (product) => product.category === selectedCategory
+            );
             setFilteredProducts(filteredProducts);
         } else {
             setFilteredProducts(products);
@@ -91,8 +112,7 @@ const Home = () => {
         sortProducts(selectedSortOption);
     }, [selectedSortOption]);
 
-    const handleCategoryChange = (event) => {
-        const category = event.target.value;
+    const handleCategoryChange = (event, category) => {
         setSelectedCategory(category);
     };
 
@@ -105,13 +125,20 @@ const Home = () => {
         let sortedProducts = [...filteredProducts];
         switch (sortOption) {
             case 'priceHighToLow':
-                sortedProducts.sort((product1, product2) => product2.price - product1.price);
+                sortedProducts.sort((product1, product2) =>
+                    product2.price - product1.price
+                );
                 break;
             case 'priceLowToHigh':
-                sortedProducts.sort((product1, product2) => product1.price - product2.price);
+                sortedProducts.sort((product1, product2) =>
+                    product1.price - product2.price
+                );
                 break;
             case 'newest':
-                sortedProducts.sort((product1, product2) => new Date(product2.createdAt) - new Date(product1.createdAt));
+                sortedProducts.sort(
+                    (product1, product2) =>
+                        new Date(product2.createdAt) - new Date(product1.createdAt)
+                );
                 break;
             default:
                 break;
@@ -121,7 +148,6 @@ const Home = () => {
 
     const handleBuyClick = (productId) => {
         window.location.href = `/product-detail/${productId}`;
-        // Call your desired function here for the button
     };
 
     const handleEditClick = (productId) => {
@@ -187,7 +213,7 @@ const Home = () => {
                                     <Button variant="contained" onClick={() => handleBuyClick(product.id)}>
                                         BUY
                                     </Button>
-                                    {isAdmin() && user !== null ? (
+                                    {isAdmin() && user !== null && (
                                         <Box marginLeft="auto">
                                             <IconButton onClick={() => handleEditClick(product.id)}>
                                                 <EditIcon />
@@ -196,7 +222,7 @@ const Home = () => {
                                                 <DeleteIcon />
                                             </IconButton>
                                         </Box>
-                                    ) : null}
+                                    )}
                                 </Box>
                             </CardContent>
                         </Card>
@@ -209,8 +235,8 @@ const Home = () => {
                     <Typography variant="body2">Are you sure you want to delete this product?</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleDialogConfirm} variant="contained"  color="primary">OK</Button>
-                    <Button onClick={handleDialogClose} variant="outlined" >CANCEL</Button>
+                    <Button onClick={handleDialogConfirm} variant="contained" color="primary">OK</Button>
+                    <Button onClick={handleDialogClose} variant="outlined">CANCEL</Button>
                 </DialogActions>
             </Dialog>
         </Container>
