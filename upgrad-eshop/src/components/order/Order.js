@@ -1,7 +1,7 @@
 import './Order.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, TextField, Typography, Button, Box, Card, CardMedia, Stack, Grid, Stepper, Step, StepLabel, Alert, AlertTitle, Select, MenuItem, Snackbar } from '@mui/material';
+import { Container, TextField, Typography, Button, Box, Card, CardMedia, Stack, Grid, Stepper, Step, StepLabel, Alert, Select, MenuItem, Snackbar } from '@mui/material';
 import productService from '../../services/productService';
 import addressService from '../../services/addressService';
 import orderService from '../../services/orderService';
@@ -14,6 +14,7 @@ const Order = () => {
     const [product, setProduct] = useState(null);
     // Select Address
     const [addresses, setAddresses] = useState(null);
+    const prevAddresses = useRef(null);
     const [selectedAddress, setSelectedAddress] = useState('');
     // Steps
     const [activeStep, setActiveStep] = useState(0);
@@ -39,6 +40,13 @@ const Order = () => {
         fetchProductDetails();
         fetchAddresses();
     }, []);
+
+    useEffect(() => {
+        if (prevAddresses.current && JSON.stringify(prevAddresses.current) !== JSON.stringify(addresses)) {
+            fetchAddresses();
+        }
+        prevAddresses.current = addresses;
+    }, [addresses]);
 
     const fetchProductDetails = async () => {
         try {
@@ -134,7 +142,7 @@ const Order = () => {
                 initialState();
                 // Set Success
                 setSuccess('Address registered successfully!');
-                fetchAddresses();
+                setAddresses([...addresses, data]);
             } catch (error) {
                 console.error('Sign Up error:', error);
                 setError(error.message);
